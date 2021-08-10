@@ -3,6 +3,7 @@ import { inject as service } from '@ember/service';
 
 export default Component.extend({
   selectSpendLuck: false,
+  selectSkillRoll: false,
   luckReason: null,
   tagName: '',
   gameApi: service(),
@@ -23,7 +24,7 @@ export default Component.extend({
       }
 
       api.requestOne('spendLuck', { scene_id: this.get('scene.id'),
-      reason: luckReason }, null)
+        reason: luckReason, sender: this.get('scene.poseChar.name') }, null)
       .then( (response) => {
         if (response.error) {
           return;
@@ -38,7 +39,7 @@ export default Component.extend({
         if (response.error) {
           return;
         }
-        this.set('scene.combat', response.id);
+        this.set('scene.combat', response);
       });
     }
   }

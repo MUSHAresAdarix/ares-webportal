@@ -9,18 +9,19 @@ export default Controller.extend(AuthenticatedController, {
     session: service(),
     gameSocket: service(),
     flashMessages: service(),
-    confirmDeleteTopic: null,
-    confirmDeleteReply: null,
-    chooseNewCategory: null,
+    router: service(),
+    confirmDeleteTopic: false,
+    confirmDeleteReply: false,
+    chooseNewCategory: false,
     newCategory: null,
     author: null,
     
     resetOnExit: function() {
         this.set('reply', '');
-        this.set('confirmDeleteReply', null);
-        this.set('confirmDeleteTopic', null);
+        this.set('confirmDeleteReply', false);
+        this.set('confirmDeleteTopic', false);
         this.set('author', null);
-        this.set('chooseNewCategory', null);
+        this.set('chooseNewCategory', false);
         this.set('newCategory', null);
     },
     
@@ -49,6 +50,7 @@ export default Controller.extend(AuthenticatedController, {
        this.set('model.message', data.message);
        this.set('model.raw_message', data.raw_message);
        this.set('model.can_edit', currentUserId == data.author.id);
+       this.set('model.tags', data.tags);
      }
      else if (data.type == 'reply_edited') {
        let reply = this.get('model.replies').find(r => r.id == data.reply);
@@ -107,7 +109,7 @@ export default Controller.extend(AuthenticatedController, {
                 }
                 
                 if (response.post_id) {
-                    this.transitionToRoute('forum-topic', response.category_id, response.post_id);
+                    this.router.transitionTo('forum-topic', response.category_id, response.post_id);
                 }
                 else {
                     this.flashMessages.warning('No more unread messages.');                    
@@ -163,7 +165,7 @@ export default Controller.extend(AuthenticatedController, {
               if (response.error) {
                 return;
               }
-            this.transitionToRoute('forum-category', this.get('model.category.id'));
+            this.router.transitionTo('forum-category', this.get('model.category.id'));
             this.flashMessages.success('Post deleted!');
           });
         },
@@ -187,7 +189,7 @@ export default Controller.extend(AuthenticatedController, {
                 }
                 
                 this.flashMessages.success('Topic moved!');
-                this.transitionToRoute('forum-topic', response.category_id, response.post_id);
+                this.router.transitionTo('forum-topic', response.category_id, response.post_id);
               
             });
         },

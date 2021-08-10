@@ -101,6 +101,7 @@ Router.map(function() {
   this.route('plot-edit', { path: '/plot/:id/edit' });
   this.route('plot-create', { path: '/plot/create' });
   this.route('plugins-edit');
+  this.route('prefs');
   this.route('recent-changes');
   this.route('register');
   this.route('roles');
@@ -132,6 +133,7 @@ Router.map(function() {
   this.route('tos');
   this.route('who');
   this.route('wiki');
+  this.route('wiki-archive');
   this.route('wiki-page', { path: '/wiki/:id'});
   this.route('wiki-all', { path: '/wiki/all'});
   this.route('wiki-create', { path: '/wiki/create', query_params: ['title', 'category', 'template', 'tags']});

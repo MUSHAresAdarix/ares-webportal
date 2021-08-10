@@ -4,11 +4,12 @@ import { inject as service } from '@ember/service';
 export default Controller.extend({
     gameApi: service(),
     flashMessages: service(),
-    confirmClaim: null,
+    router: service(),
+    confirmClaim: false,
     rosterApp: '',
 
     resetOnExit: function() {
-      this.set('confirmClaim', null);
+      this.set('confirmClaim', false);
       this.set('rosterApp', this.get('model.roster.app_template'));
     },
     
@@ -21,7 +22,7 @@ export default Controller.extend({
             let api = this.gameApi;
             let app = this.rosterApp;
             
-            this.set('confirmClaim', null);
+            this.set('confirmClaim', false);
             this.set('rosterApp', this.get('model.roster.app_template'));
             
             if (this.get('model.roster.app_required') && !app) {
@@ -37,7 +38,7 @@ export default Controller.extend({
                   this.set('model.password', response.password);
                 } else {
                   this.flashMessages.success('App submitted.');
-                  this.transitionToRoute('roster');
+                  this.router.transitionTo('roster');
                 }
                 
             });

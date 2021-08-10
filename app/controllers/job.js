@@ -7,11 +7,13 @@ export default Controller.extend({
   editParticipants: false,
   newParticipants: null,
   newActivity: false,
-    
+  selectSkillRoll: false,
+      
   gameApi: service(),
   gameSocket: service(),
   session: service(),
   flashMessages: service(),
+  router: service(),
 
   init: function() {
     this._super(...arguments);
@@ -27,6 +29,7 @@ export default Controller.extend({
     this.set('newActivity', false);
     this.resetReplyAdmin();
     this.set('editParticipants', false);
+    this.set('selectSkillRoll', false);
     this.set('newParticipants', this.get('model.job.participants'));
   },
     
@@ -59,6 +62,17 @@ export default Controller.extend({
     }
   },
   
+  approveRoster: function(approved) {
+    this.gameApi.requestOne('approveRoster', { name: this.get('model.job.roster_name'), approved: approved })
+    .then((response) => {
+      if (response.error) {
+        return;
+      }
+      this.send('reloadModel');
+      this.flashMessages.success('Roster app ' + (approved ? 'approved.' : 'rejected.'));
+    });
+  },
+  
   actions: {
     addReply() {
       let api = this.gameApi;
@@ -88,7 +102,7 @@ export default Controller.extend({
         }
         this.set('reply', '');
         this.resetReplyAdmin();
-        this.transitionToRoute('jobs');
+        this.router.transitionTo('jobs');
         this.flashMessages.success('Reply added!');
       });
     },
@@ -144,6 +158,15 @@ export default Controller.extend({
     
     responseSelected: function(resp) {
       this.set('reply', resp.value);
+    },
+    
+    approveRoster: function() {
+      this.approveRoster(true);
+    },
+    
+    rejectRoster: function() {
+      this.approveRoster(false);
     }
+    
   }
 });

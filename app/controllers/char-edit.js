@@ -4,6 +4,7 @@ import { inject as service } from '@ember/service';
 export default Controller.extend({    
     gameApi: service(),
     flashMessages: service(),
+    router: service(),
     customUpdateCallback: null,
   
     buildQueryDataForChar: function() {
@@ -39,6 +40,7 @@ export default Controller.extend({
 
         
         descs['current'] = this.get('model.char.descs.current');
+        descs['short'] = this.get('model.char.shortdesc');
         descs['outfits'] = {};
         descs['details'] = {};
         this.get('model.char.descs.outfits').forEach(function(p) {
@@ -71,6 +73,7 @@ export default Controller.extend({
             profile_gallery: this.get('model.char.profile_gallery'),
             profile_order: this.get('model.char.profile_order'),
             background: this.get('model.char.background'),
+            rp_prefs: this.get("model.char.rp_prefs"),
             tags: tags,
             descs: descs,
             custom: custom,
@@ -79,6 +82,10 @@ export default Controller.extend({
         };
     }, 
     actions: {
+      
+        rolesChanged(roles) {
+          this.set('model.char.roles', roles);
+        },
         
         save() {
             if (this.get('model.char.profile').filter(p => p.name.length == 0).length > 0) {
@@ -114,7 +121,7 @@ export default Controller.extend({
                 }
             
                 this.flashMessages.success('Saved!');
-                this.transitionToRoute('char', this.get('model.char.name'));
+                this.router.transitionTo('char', this.get('model.char.name'));
                 
             });
         }

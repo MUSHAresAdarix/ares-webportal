@@ -5,12 +5,14 @@ import { inject as service } from '@ember/service';
 export default Controller.extend(AuthenticatedController, {
     gameApi: service(),
     flashMessages: service(),
+    router: service(),
     title: '',
     date: '',
     time: '',
     description: '',
     tags: '',
     content_warning: '',
+    warning_tags: [],
     
     resetOnExit: function() {
         this.set('title', '');
@@ -19,11 +21,12 @@ export default Controller.extend(AuthenticatedController, {
         this.set('tags', '');
         this.set('description', '');
         this.set('content_warning', '');
+        this.set('warning_tags', []);
     },
     
     actions: {
         changeDate: function(date) {
-            let formatted_date = moment(date).format(this.get('model.game.date_entry_format'));
+            let formatted_date = moment(date).format(this.get('model.app.game.date_entry_format'));
             this.set('date', formatted_date);  
         },
         create: function() {
@@ -44,10 +47,15 @@ export default Controller.extend(AuthenticatedController, {
                 if (response.error) {
                     return;
                 }
-                this.transitionToRoute('event',                          
+                this.router.transitionTo('event',                          
                           response.id);
                 this.flashMessages.success('Event added!');
             });
-        }
+        },
+        
+        warningsChanged(new_warnings) {
+          this.set('warning_tags', new_warnings);
+          this.set('content_warning', new_warnings.join(', '));
+        },
     }
 });
